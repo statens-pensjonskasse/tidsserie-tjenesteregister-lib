@@ -1,7 +1,9 @@
 package no.spk.pensjon.faktura.tjenesteregister.support;
 
+import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
@@ -12,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
 import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
+import no.spk.pensjon.faktura.tjenesteregister.UgyldigSyntaxException;
 
 public class SimpleServiceRegistry implements ServiceRegistry {
     private static final int DEFAULT_RANKING = 0;
@@ -29,8 +33,23 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     }
 
     @Override
+    public <T> Optional<ServiceReference<T>> getServiceReference(final Class<T> tjenestetype, final String filter) {
+        return getServiceReferences(tjenestetype, filter)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public <T> List<ServiceReference<T>> getServiceReferences(final Class<T> tjenestetype) {
         return referencesFor(tjenestetype).collect(toList());
+    }
+
+    @Override
+    public <T> List<ServiceReference<T>> getServiceReferences(final Class<T> tjenestetype, final String... filter) {
+        return getServiceReferences(tjenestetype)
+                .stream()
+                .filter(r -> matchAll(r, asList(filter)))
+                .collect(toList());
     }
 
     @Override
@@ -42,6 +61,33 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     public <T> ServiceRegistration<T> registerService(final Class<T> tjenestetype, final T tjeneste, final Properties egenskapar) {
         return newEntry(tjenestetype, tjeneste, egenskapar)
                 .registerWith(entriesFor(tjenestetype));
+    }
+
+    private <T> boolean matchAll(final ServiceReference<T> reference, final List<String> filters) {
+        final Predicate<String> erGyldig = EgenskapFilter::erGyldig;
+        final List<String> ugyldig = filters
+                .stream()
+                .filter(erGyldig.negate())
+                .collect(toList());
+        if (!ugyldig.isEmpty()) {
+            throw new UgyldigSyntaxException(
+                    ugyldig
+                            + " filter er ikkje syntaktisk gyldige, "
+                            + "kvart filter må vere på formatet egenskap=verdi.\n"
+                            + "Ugyldige filter:\n"
+                            + ugyldig
+                            .stream()
+                            .map(filter -> "\t- " + filter)
+                            .collect(joining("\n"))
+            );
+        }
+
+        return filters
+                .stream()
+                .map(EgenskapFilter::parse)
+                .map(filter -> filter.match(reference))
+                .reduce((a, b) -> a && b)
+                .orElse(false);
     }
 
     private <T> ServiceEntry<T> newEntry(final Class<T> tjenestetype, final T tjeneste, final Properties egenskapar) {

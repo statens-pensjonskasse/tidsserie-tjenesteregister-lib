@@ -4,15 +4,22 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.OptionalAssert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ServiceRegistryTest {
+    @Rule
+    public final ExpectedException e = ExpectedException.none();
+
     private SimpleServiceRegistry registry;
 
     @Before
@@ -43,6 +50,17 @@ public class ServiceRegistryTest {
     public void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen() {
         assertThat(registry.getServiceReference(Object.class))
                 .as("tjenesterefeanse for tjenestetype " + Object.class.getSimpleName())
+                .isEmpty();
+    }
+
+    @Test
+    public void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen_og_som_matchar_filter() {
+        final Properties egenskapar = new Properties();
+        egenskapar.setProperty("key","value");
+        registry.registerService(String.class, "I AM VALUE", egenskapar);
+
+        assertThat(registry.getServiceReference(String.class, "key=othervalue"))
+                .as("tjenesterefeanse for tjenestetype " + String.class.getSimpleName())
                 .isEmpty();
     }
 
@@ -91,6 +109,76 @@ public class ServiceRegistryTest {
         assertThat(registry.getServiceReferences(String.class))
                 .as("referansar for tenestetype " + String.class)
                 .hasSize(2);
+    }
+
+    @Test
+    public void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_mange_referansar() {
+        final Properties egenskapar = new Properties();
+        egenskapar.setProperty("katalog", "currentDir");
+        registry.registerService(Path.class, Paths.get("."), egenskapar);
+
+        final Properties egenskapar2 = new Properties();
+        egenskapar2.setProperty("katalog", "tmpDir");
+        registry.registerService(Path.class, Paths.get("/tmp"), egenskapar2);
+
+        assertThat(
+                registry
+                        .getServiceReferences(
+                                Path.class,
+                                "katalog=currentDir"
+                        )
+        )
+                .hasSize(1);
+    }
+
+    @Test
+    public void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_standardteneste() {
+        final Properties egenskapar = new Properties();
+        egenskapar.setProperty("katalog", "currentDir");
+        registry.registerService(Path.class, Paths.get("."), egenskapar);
+
+        final Properties egenskapar2 = new Properties();
+        egenskapar2.setProperty("katalog", "tmpDir");
+        registry.registerService(Path.class, Paths.get("/tmp"), egenskapar2);
+
+        assertThat(
+                registry
+                        .getServiceReference(
+                                Path.class,
+                                "katalog=currentDir"
+                        )
+                        .flatMap(registry::getService)
+        )
+                .isEqualTo(of(Paths.get(".")));
+    }
+
+    @Test
+    public void skal_feile_paa_ugyldige_filter() {
+        e.expect(UgyldigSyntaxException.class);
+
+        registry.registerService(String.class, "HELLO");
+
+        registry.getServiceReferences(String.class, "yada yada");
+    }
+
+    @Test
+    public void skal_beholde_erliktegn_etter_foerste_erlik_som_skiller_navn_fra_verdi_i_filter() {
+        final Properties egenskapar = new Properties();
+        egenskapar.setProperty("yada", "=yada");
+
+        final ServiceRegistration<String> registration = registry.registerService(
+                String.class,
+                "HEI",
+                egenskapar
+        );
+        assertThat(
+                registry.getServiceReference(String.class, "yada==yada")
+        )
+                .isEqualTo(
+                        of(
+                                registration.getReference()
+                        )
+                );
     }
 
     private <T> OptionalAssert<T> assertTjeneste(final ServiceReference<T> referanse) {

@@ -59,6 +59,22 @@ public interface ServiceRegistry {
     <T> Optional<ServiceReference<T>> getServiceReference(Class<T> tjenestetype);
 
     /**
+     * Returnerer ein referanse til den høgast ranka tjenesta som er registrert under {@code tjenestetype}.
+     * <br>
+     * Merk at referansen ikkje treng å forbli gyldig til evig tid, ved {@link ServiceRegistration#unregister()
+     * avregistrering} vil tidligare uthenta referansar bli ugyldige og vil ikkje lenger kunne benyttast
+     * mot {@link #getService(ServiceReference)} for å få tak i referansar til sjølve tjenesta.
+     *
+     * @param <T> tjenestetypen
+     * @param tjenestetype grensesnittet for tjenesta som det skal hentast ut referanse til
+     * @param filter eit variabelt antall filter som indikerer kva egenskapar standardtenesta som blir valgt må vere registrert med
+     * @return ein referanse til den høgast ranka tjenesta for den aktuelle typa , eller {@link Optional#empty()}
+     * dersom det ikkje eksisterer noko tjeneste av den angitte typen i tjenesteregisteret
+     * @see Constants#SERVICE_RANKING
+     */
+    <T> Optional<ServiceReference<T>> getServiceReference(Class<T> tjenestetype, String filter);
+
+    /**
      * Hentar ut alle tjenester som ligg registrert i tjenesteregisteret under den angitte tjenestetypen.
      * <br>
      * Tjenestene blir lista ut sortert basert på {@link Constants#SERVICE_RANKING ranking}.
@@ -72,6 +88,26 @@ public interface ServiceRegistry {
      * @return alle tjenester som er registrert for tjenestetypen
      */
     <T> List<ServiceReference<T>> getServiceReferences(Class<T> tjenestetype);
+
+    /**
+     * /**
+     * Hentar ut alle tjenester som ligg registrert i tjenesteregisteret under den angitte tjenestetypen.
+     * <br>
+     * I motsetning til {@link #getServiceReference(Class)} kan ein her filtrere kva tjenester som blir lista ut
+     * basert på egenskapane tjenestene er registrert med.
+     * <br>
+     * Tjenestene blir lista ut sortert basert på {@link Constants#SERVICE_RANKING ranking}.
+     * <br>
+     * Merk at referansane ikkje treng å forbli gyldige til evig tid, ved {@link ServiceRegistration#unregister()
+     * avregistrering} vil tidligare uthenta referansar bli ugyldige og vil ikkje lenger kunne benyttast
+     * mot {@link #getService(ServiceReference)} for å få tak i referansar til sjølve tjenesta.
+     *
+     * @param <T> tjenestetypen
+     * @param tjenestetype tjenestetypen som dei returnerte tjenestereferansane skal vere tilknytta
+     * @param filter eit variabelt antall filter som indikerer kva egenskapar dei utlista tjenestene må vere registrert med
+     * @return alle tjenester som matchar alle filter og som er registrert for tjenestetypen
+     */
+    <T> List<ServiceReference<T>> getServiceReferences(Class<T> tjenestetype, String... filter);
 
     /**
      * Registrerer tjenesta under den angitte tjenestetypen i tjenesteregisteret.
