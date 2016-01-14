@@ -34,7 +34,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_fjerne_tenesta_ved_avregningstrering() {
+    public void skal_fjerne_tenesta_ved_avregistrering() {
         registry.registerService(String.class, "I WAS HERE BUT NO MORE", new Properties()).unregister();
         assertStandardtenesteForType(String.class).isEmpty();
     }
@@ -71,14 +71,13 @@ public class ServiceRegistryTest {
 
         final Properties egenskapar = new Properties();
         egenskapar.setProperty(Constants.SERVICE_RANKING, "1000");
-        Class<String> type = String.class;
-        registry.registerService(type, expected, egenskapar);
+        registry.registerService(String.class, "BY THE POWER OF NOTHING, I AM NO DEFAULT :(", egenskapar);
 
         final Properties egenskapar2 = new Properties();
         egenskapar2.setProperty(Constants.SERVICE_RANKING, "10");
-        registry.registerService(type, "BY THE POWER OF NOTHING, I AM NO DEFAULT :(", egenskapar2);
+        registry.registerService(String.class, expected, egenskapar2);
 
-        assertStandardtenesteForType(type)
+        assertStandardtenesteForType(String.class)
                 .isEqualTo(
                         of(expected)
                 );
