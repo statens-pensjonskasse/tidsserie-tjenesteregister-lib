@@ -70,11 +70,11 @@ public class ServiceRegistryTest {
         final String expected = "BY THE POWER OF GREYSKULL, I AM THE DEFAULT!";
 
         final Properties egenskapar = new Properties();
-        egenskapar.setProperty(Constants.SERVICE_RANKING, "1000");
+        egenskapar.setProperty(Constants.SERVICE_RANKING, "10");
         registry.registerService(String.class, "BY THE POWER OF NOTHING, I AM NO DEFAULT :(", egenskapar);
 
         final Properties egenskapar2 = new Properties();
-        egenskapar2.setProperty(Constants.SERVICE_RANKING, "10");
+        egenskapar2.setProperty(Constants.SERVICE_RANKING, "1000");
         registry.registerService(String.class, expected, egenskapar2);
 
         assertStandardtenesteForType(String.class)

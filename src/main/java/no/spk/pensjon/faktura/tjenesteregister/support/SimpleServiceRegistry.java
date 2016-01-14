@@ -83,11 +83,12 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     }
 
     private static Comparator<ServiceEntry<?>> orderByRanking() {
-        return Comparator.comparing(entry -> of(entry)
+        return Comparator.<ServiceEntry<?>, Integer>comparing(entry -> of(entry)
                 .flatMap(e -> e.getProperty(SERVICE_RANKING))
                 .map(Integer::parseInt)
                 .orElse(DEFAULT_RANKING)
-        );
+        )
+                .reversed();
     }
 
     private static class ServiceEntry<T> implements ServiceRegistration<T>, ServiceReference<T> {
