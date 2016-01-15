@@ -64,6 +64,11 @@ public interface ServiceRegistry {
      * Merk at referansen ikkje treng å forbli gyldig til evig tid, ved {@link ServiceRegistration#unregister()
      * avregistrering} vil tidligare uthenta referansar bli ugyldige og vil ikkje lenger kunne benyttast
      * mot {@link #getService(ServiceReference)} for å få tak i referansar til sjølve tjenesta.
+     * <br>
+     * Kvart filter (som tjenesta må ha egenskapar som matchar) består av fritekst som må vere på formatet
+     * <code>navn=verdi</code>.
+     * <br>
+     * Standardtjenesta som blir returnert må matche alle filtra, ikkje berre eit av dei.
      *
      * @param <T> tjenestetypen
      * @param tjenestetype grensesnittet for tjenesta som det skal hentast ut referanse til
@@ -72,7 +77,7 @@ public interface ServiceRegistry {
      * dersom det ikkje eksisterer noko tjeneste av den angitte typen i tjenesteregisteret
      * @see Constants#SERVICE_RANKING
      */
-    <T> Optional<ServiceReference<T>> getServiceReference(Class<T> tjenestetype, String filter);
+    <T> Optional<ServiceReference<T>> getServiceReference(Class<T> tjenestetype, String... filter);
 
     /**
      * Hentar ut alle tjenester som ligg registrert i tjenesteregisteret under den angitte tjenestetypen.
@@ -101,6 +106,11 @@ public interface ServiceRegistry {
      * Merk at referansane ikkje treng å forbli gyldige til evig tid, ved {@link ServiceRegistration#unregister()
      * avregistrering} vil tidligare uthenta referansar bli ugyldige og vil ikkje lenger kunne benyttast
      * mot {@link #getService(ServiceReference)} for å få tak i referansar til sjølve tjenesta.
+     * <br>
+     * Kvart filter (som tjenestene må ha egenskapar som matchar) består av fritekst som må vere på formatet
+     * <code>navn=verdi</code>.
+     * <br>
+     * Tjenester som blir returnert må matche alle filtra, ikkje berre eit av dei.
      *
      * @param <T> tjenestetypen
      * @param tjenestetype tjenestetypen som dei returnerte tjenestereferansane skal vere tilknytta
@@ -115,30 +125,34 @@ public interface ServiceRegistry {
      * Den returnerte registreringa er privat for klienten/tjenestetilbydaren som registrerer tjenesta og bør ikkje
      * delast med andre.
      * <br>
-     * Andre kliantar kan søke opp tjenesta via {@link #getServiceReference(Class)}, {@link
-     * #getServiceReferences(Class)} eller liknande metoder.
+     * Andre klientar kan søke opp tjenesta via {@link #getServiceReference(Class)},
+     * {@link #getServiceReferences(Class)} eller liknande metoder.
+     * <br>
+     * Egenskapar som tjenesta blir registrert med, er fritekst som må vere på formatet <code>navn=verdi</code>.
+     * Navnet på egenskapen kan inneholde alle tegn utanom mellomrom.
      *
      * @param <T> tjenestetypen
      * @param tjenestetype grensesnittet so tjenesta skal registrerast under
      * @param tjeneste tjenesta som skal leggast inn i tjenesteregisteret
-     * @param egenskapar inneheld metadata om tjenestas og dens egenskapar
+     * @param egenskapar inneheld metadata om tjenestas og dens egenskapar, egen
      * @return ei registrering som lar tjenestetilbydaren endre på egenskapane, referere til eller avregistrere tjenesta
      * på eit seinare tidspunkt
+     * @throws UgyldigSyntaxException dersom ein eller fleire av egenskapane ikkje er på formatet <code>navn=verdi</code>
      */
-    <T> ServiceRegistration<T> registerService(Class<T> tjenestetype, T tjeneste, Properties egenskapar);
+    <T> ServiceRegistration<T> registerService(Class<T> tjenestetype, T tjeneste, String... egenskapar);
 
     /**
-     * Kallar {@link #registerService(Class, Object, Properties)} med eit tomt sett med egenskapar.
+     * Kallar {@link #registerService(Class, Object, String...)} med eit tomt sett med egenskapar.
      *
      * @param <T> tjenestetypen
      * @param tjenestetype grensesnittet so tjenesta skal registrerast under
      * @param tjeneste tjenesta som skal leggast inn i tjenesteregisteret
      * @return ei registrering som lar tjenestetilbydaren endre på egenskapane, referere til eller avregistrere tjenesta
      * på eit seinare tidspunkt
-     * @see #registerService(Class, Object, Properties)
+     * @see #registerService(Class, Object, String...)
      */
     default <T> ServiceRegistration<T> registerService(final Class<T> tjenestetype, final T tjeneste) {
-        return registerService(tjenestetype, tjeneste, new Properties());
+        return registerService(tjenestetype, tjeneste, new String[0]);
     }
 
     /**

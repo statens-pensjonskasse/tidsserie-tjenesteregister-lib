@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -33,7 +34,7 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public <T> Optional<ServiceReference<T>> getServiceReference(final Class<T> tjenestetype, final String filter) {
+    public <T> Optional<ServiceReference<T>> getServiceReference(final Class<T> tjenestetype, final String... filter) {
         return getServiceReferences(tjenestetype, filter)
                 .stream()
                 .findFirst();
@@ -58,13 +59,23 @@ public class SimpleServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public <T> ServiceRegistration<T> registerService(final Class<T> tjenestetype, final T tjeneste, final Properties egenskapar) {
-        return newEntry(tjenestetype, tjeneste, egenskapar)
+    public <T> ServiceRegistration<T> registerService(final Class<T> tjenestetype, final T tjeneste, final String... egenskapar) {
+        return newEntry(
+                tjenestetype,
+                tjeneste,
+                konverter(asList(egenskapar))
+                        .reduce(
+                                Egenskapar.TOM,
+                                Egenskapar::plus,
+                                Egenskapar::kombiner
+                        )
+                        .toProperties()
+        )
                 .registerWith(entriesFor(tjenestetype));
     }
 
     private <T> boolean matchAll(final ServiceReference<T> reference, final List<String> filters) {
-        final Predicate<String> erGyldig = EgenskapFilter::erGyldig;
+        final Predicate<String> erGyldig = Egenskap::erGyldig;
         final List<String> ugyldig = filters
                 .stream()
                 .filter(erGyldig.negate())
@@ -82,12 +93,16 @@ public class SimpleServiceRegistry implements ServiceRegistry {
             );
         }
 
-        return filters
-                .stream()
-                .map(EgenskapFilter::parse)
+        return konverter(filters)
                 .map(filter -> filter.match(reference))
                 .reduce((a, b) -> a && b)
                 .orElse(false);
+    }
+
+    private static Stream<Egenskap> konverter(final List<String> filters) {
+        return filters
+                .stream()
+                .map(Egenskap::parse);
     }
 
     private <T> ServiceEntry<T> newEntry(final Class<T> tjenestetype, final T tjeneste, final Properties egenskapar) {

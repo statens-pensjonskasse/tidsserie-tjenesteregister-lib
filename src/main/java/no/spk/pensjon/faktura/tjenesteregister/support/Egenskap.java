@@ -1,18 +1,20 @@
 package no.spk.pensjon.faktura.tjenesteregister.support;
 
+import java.util.Properties;
+
 import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
 import no.spk.pensjon.faktura.tjenesteregister.UgyldigSyntaxException;
 
-class EgenskapFilter {
+class Egenskap {
     private final String name;
     private final String value;
 
-    private EgenskapFilter(final String name, final String value) {
+    private Egenskap(final String name, final String value) {
         this.name = name;
         this.value = value;
     }
 
-    static EgenskapFilter parse(final String text) {
+    static Egenskap parse(final String text) {
         if (!erGyldig(text)) {
             throw new UgyldigSyntaxException(
                     text
@@ -22,17 +24,21 @@ class EgenskapFilter {
             );
         }
         final int firstIndex = text.indexOf("=");
-        return new EgenskapFilter(
+        return new Egenskap(
                 text.substring(0, firstIndex),
                 text.substring(firstIndex + 1)
         );
     }
 
     static boolean erGyldig(final String filter) {
-        return filter.matches("^[a-zA-Z]+=.+$");
+        return filter.matches("^[^=]+=.+$");
     }
 
     boolean match(final ServiceReference<?> reference) {
         return reference.getProperty(name).filter(value::equals).isPresent();
+    }
+
+    void put(final Properties egenskapar) {
+        egenskapar.setProperty(name, value);
     }
 }
