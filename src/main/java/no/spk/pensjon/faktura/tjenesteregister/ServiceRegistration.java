@@ -5,9 +5,9 @@ import java.util.Properties;
 /**
  * Ei registrert teneste.
  * <br>
- * Registreringa blir generert ved kall til {@link ServiceRegistry#registerService(Class, Object)} / {@link
- * ServiceRegistry#registerService(Class, Object, Properties)} og er privat for tjenesteleverandøren som registrerer
- * tjenesta i tjenesteregisteret. Den bør ikkje delast med andre.
+ * Registreringa blir generert ved kall til {@link ServiceRegistry#registerService(Class, Object)} /
+ * {@link ServiceRegistry#registerService(Class, Object, String...)} og er privat for tjenesteleverandøren
+ * som registrerer tjenesta i tjenesteregisteret. Den bør ikkje delast med andre.
  *
  * @param <T> tjenestetypen for den registrerte tjenesta
  * @author Tarjei Skorgenes

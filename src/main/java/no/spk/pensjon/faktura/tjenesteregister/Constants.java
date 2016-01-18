@@ -10,8 +10,8 @@ public class Constants {
     /**
      * Tjenesteegenskap som identifiserer ei tjeneste sitt ranking-tall.
      * <br>
-     * Denne egenskapen kan bli inkludert i egenskapane som blir sendt til {@link ServiceRegistry#registerService(Class,
-     * Object, java.util.Properties)}.
+     * Denne egenskapen kan bli inkludert i egenskapane som blir sendt til
+     * {@link ServiceRegistry#registerService(Class, Object, String...)}.
      * <br>
      * Verdien av egenskapen må vere ein tekst som inneheld eit heiltall.
      * <br>
