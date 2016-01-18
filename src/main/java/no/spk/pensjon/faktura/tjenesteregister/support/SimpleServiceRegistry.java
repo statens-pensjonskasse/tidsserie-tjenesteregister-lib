@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -119,7 +118,7 @@ public class SimpleServiceRegistry implements ServiceRegistry {
         return entriesFor(tjenestetype)
                 .stream()
                 .map(e -> (ServiceEntry<T>) e)
-                .sorted(orderByRanking())
+                .sorted()
                 .map(ServiceEntry::getReference);
     }
 
@@ -143,16 +142,7 @@ public class SimpleServiceRegistry implements ServiceRegistry {
         });
     }
 
-    private static Comparator<ServiceEntry<?>> orderByRanking() {
-        return Comparator.<ServiceEntry<?>, Integer>comparing(entry -> of(entry)
-                .flatMap(e -> e.getProperty(SERVICE_RANKING))
-                .map(Integer::parseInt)
-                .orElse(DEFAULT_RANKING)
-        )
-                .reversed();
-    }
-
-    private static class ServiceEntry<T> implements ServiceRegistration<T>, ServiceReference<T> {
+    private static class ServiceEntry<T> implements ServiceRegistration<T>, ServiceReference<T>, Comparable<ServiceEntry<T>> {
         private final Properties egenskapar = new Properties();
         private final SimpleServiceRegistry parent;
         private final Class<T> tjenestetype;
@@ -176,6 +166,13 @@ public class SimpleServiceRegistry implements ServiceRegistry {
 
         T service() {
             return tjeneste;
+        }
+
+        @Override
+        public int compareTo(ServiceEntry<T> o) {
+            final Integer b = o.getProperty(SERVICE_RANKING).map(Integer::parseInt).get();
+            final Integer a = getProperty(SERVICE_RANKING).map(Integer::parseInt).get();
+            return b.compareTo(a);
         }
 
         @Override
