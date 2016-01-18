@@ -129,7 +129,7 @@ public interface ServiceRegistry {
      * {@link #getServiceReferences(Class)} eller liknande metoder.
      * <br>
      * Egenskapar som tjenesta blir registrert med, er fritekst som må vere på formatet <code>navn=verdi</code>.
-     * Navnet på egenskapen kan inneholde alle tegn utanom mellomrom.
+     * Navnet på egenskapen kan inneholde alle tegn utanom <code>=</code>.
      *
      * @param <T> tjenestetypen
      * @param tjenestetype grensesnittet so tjenesta skal registrerast under
