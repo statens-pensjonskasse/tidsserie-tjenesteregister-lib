@@ -26,5 +26,5 @@ public class Constants {
      * den som vil bli returnert som standardtenesta, medan ei teneste med ranking {@link Integer#MIN_VALUE} er svært
      * usannsynlig at vil bli returnert som standardtenesta.
      */
-    public static String SERVICE_RANKING = "service.ranking";
+    public static final String SERVICE_RANKING = "service.ranking";
 }
