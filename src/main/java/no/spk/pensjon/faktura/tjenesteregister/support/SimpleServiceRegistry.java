@@ -23,13 +23,15 @@ import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
 import no.spk.pensjon.faktura.tjenesteregister.UgyldigSyntaxException;
 
 public class SimpleServiceRegistry implements ServiceRegistry {
+    private static final String[] MATCH_ANY = new String[0];
+
     private static final int DEFAULT_RANKING = 0;
 
     private final Map<Class<?>, List<ServiceEntry<?>>> services = new HashMap<>();
 
     @Override
     public <T> Optional<ServiceReference<T>> getServiceReference(final Class<T> tjenestetype) {
-        return referencesFor(tjenestetype).findFirst();
+        return getServiceReference(tjenestetype, MATCH_ANY);
     }
 
     @Override
@@ -41,13 +43,12 @@ public class SimpleServiceRegistry implements ServiceRegistry {
 
     @Override
     public <T> List<ServiceReference<T>> getServiceReferences(final Class<T> tjenestetype) {
-        return referencesFor(tjenestetype).collect(toList());
+        return getServiceReferences(tjenestetype, MATCH_ANY);
     }
 
     @Override
     public <T> List<ServiceReference<T>> getServiceReferences(final Class<T> tjenestetype, final String... filter) {
-        return getServiceReferences(tjenestetype)
-                .stream()
+        return referencesFor(tjenestetype)
                 .filter(r -> matchAll(r, asList(filter)))
                 .collect(toList());
     }
@@ -94,8 +95,7 @@ public class SimpleServiceRegistry implements ServiceRegistry {
 
         return konverter(filters)
                 .map(filter -> filter.match(reference))
-                .reduce((a, b) -> a && b)
-                .orElse(false);
+                .reduce(true, (a, b) -> a && b);
     }
 
     private static Stream<Egenskap> konverter(final List<String> filters) {

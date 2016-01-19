@@ -203,6 +203,24 @@ public class ServiceRegistryTest {
                 );
     }
 
+    @Test
+    public void skal_matche_alle_tjenester_dersom_filter_manglar() {
+        registry.registerService(Integer.class, 1);
+        registry.registerService(Integer.class, 2);
+        registry.registerService(Integer.class, 3);
+
+        assertThat(registry.getServiceReferences(Integer.class)).hasSize(3);
+        assertThat(registry.getServiceReferences(Integer.class, new String[0])).hasSize(3);
+    }
+
+    @Test
+    public void skal_matche_standardtjeneste_dersom_filter_manglar() {
+        registry.registerService(Integer.class, 1);
+
+        assertThat(registry.getServiceReference(Integer.class)).isPresent();
+        assertThat(registry.getServiceReference(Integer.class, new String[0])).isPresent();
+    }
+
     private static String ranking(final int ranking) {
         return Constants.SERVICE_RANKING + "=" + ranking;
     }
