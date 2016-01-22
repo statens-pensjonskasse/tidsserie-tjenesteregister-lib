@@ -11,7 +11,7 @@
 
     <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tjenesteregister-lib</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <description>Tjenesteregister for laust kobla applikasjonar med plugin-behov og ønske om laus kobling.</description>
