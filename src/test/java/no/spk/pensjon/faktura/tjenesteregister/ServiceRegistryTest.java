@@ -4,10 +4,17 @@ import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
 
@@ -26,6 +33,66 @@ public class ServiceRegistryTest {
     @Before
     public void _before() {
         registry = new SimpleServiceRegistry();
+    }
+
+    /**
+     * Verifiserer at feilen identifisert ved test av PU_FAK_BA_12 3.0.4 på java 9 ikkje lenger eksisterer ved fleirtråda, samtidige oppslag
+     * av tenester som tenesteregisteret ikkje inneheld nokon tilbydarar for:
+     *
+     * <pre>
+     *     Caused by: java.util.ConcurrentModificationException: null
+     * 	           at java.base/java.util.HashMap.computeIfAbsent(HashMap.java:1134)
+     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.entriesFor(SimpleServiceRegistry.java:132)
+     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.referencesFor(SimpleServiceRegistry.java:118)
+     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:51)
+     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:46)
+     * 	           at no.spk.felles.tidsserie.batch.core.registry.Extensionpoint.invokeAll(Extensionpoint.java:72)
+     * 	           at no.spk.felles.tidsserie.batch.backend.hazelcast.Tidsserieagent.notifyListeners(Tidsserieagent.java:69)
+     * 	           at no.spk.felles.tidsserie.batch.backend.hazelcast.Tidsserieagent.initialize(Tidsserieagent.java:64)
+     * 	           at com.hazelcast.mapreduce.impl.task.MapCombineTask.processMapping(MapCombineTask.java:137)
+     * </pre>
+     *
+     * @link http://jira.spk.no/browse/SPKMASTER-26010?focusedCommentId=557258&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-557258
+     */
+    @Test
+    public void skal_ikkje_feile_ved_samtidige_oppslag_av_tjenestetyper_det_ikkje_er_registrert_tjenester_for() throws InterruptedException {
+        final int availableProcessors = Runtime.getRuntime().availableProcessors();
+        final ExecutorService executor = Executors.newFixedThreadPool(availableProcessors);
+
+        try {
+            final long maximumTime = 50;
+
+            final CountDownLatch ready = new CountDownLatch(1);
+            for (int i = 0; i < 100; i++) {
+                final SimpleServiceRegistry registry = new SimpleServiceRegistry();
+                final Callable<Long> lookup = () -> {
+                    long verdi = 0L;
+                    ready.await();
+                    final long start = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - start < maximumTime) {
+                        final List<ServiceReference<Object>> referanse = registry.getServiceReferences(Object.class);
+                        // Hokus pokus med hashcode her for å unngå at kompilatoren ignorerer heile for-loopen fordi den ser at referansen ellers aldri blir brukt til noko
+                        verdi += referanse.hashCode();
+                    }
+
+                    return verdi;
+                };
+                final List<Future<?>> futures = IntStream
+                        .rangeClosed(1, availableProcessors)
+                        .mapToObj(ignore -> lookup)
+                        .map(executor::submit)
+                        .collect(toList());
+                ready.countDown();
+
+                for (final Future<?> future : futures) {
+                    assertThatCode(future::get)
+                            .as("bakgrunnstrådane skal aldri feile på samtidige oppslag for tenestetyper som tenesteregisteret ikkje har nokon tenester tilgjengelig for")
+                            .doesNotThrowAnyException();
+                }
+            }
+        } finally {
+            executor.shutdown();
+        }
     }
 
     @Test

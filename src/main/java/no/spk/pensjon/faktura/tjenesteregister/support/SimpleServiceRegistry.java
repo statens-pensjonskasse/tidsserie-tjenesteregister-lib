@@ -8,7 +8,6 @@ import static java.util.stream.Collectors.toList;
 import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +70,12 @@ public class SimpleServiceRegistry implements ServiceRegistry {
                         )
                         .toProperties()
         )
-                .registerWith(entriesFor(tjenestetype));
+                .registerWith(
+                        services.computeIfAbsent(
+                                tjenestetype,
+                                type -> new ArrayList<>()
+                        )
+                );
     }
 
     private <T> boolean matchAll(final ServiceReference<T> reference, final List<String> filters) {
@@ -115,7 +119,11 @@ public class SimpleServiceRegistry implements ServiceRegistry {
 
     @SuppressWarnings("unchecked")
     private <T> Stream<ServiceReference<T>> referencesFor(final Class<T> tjenestetype) {
-        return entriesFor(tjenestetype)
+        if (!services.containsKey(tjenestetype)) {
+            return Stream.empty();
+        }
+        return services
+                .get(tjenestetype)
                 .stream()
                 .map(e -> (ServiceEntry<T>) e)
                 .sorted()
@@ -126,13 +134,6 @@ public class SimpleServiceRegistry implements ServiceRegistry {
         return ofNullable(reference)
                 .filter(r -> r instanceof ServiceEntry)
                 .map(r -> (ServiceEntry<T>) r);
-    }
-
-    private <T> List<ServiceEntry<?>> entriesFor(final Class<T> tjenestetype) {
-        return services.computeIfAbsent(
-                tjenestetype,
-                ignore -> new ArrayList<>()
-        );
     }
 
     private void remove(final ServiceEntry<?> entry) {
