@@ -6,12 +6,12 @@
         <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
         <version>122</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>no.spk.pensjon.faktura</groupId>
     <artifactId>faktura-tjenesteregister-lib</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <description>Tjenesteregister for laust kobla applikasjonar med plugin-behov og ønske om laus kobling.</description>
