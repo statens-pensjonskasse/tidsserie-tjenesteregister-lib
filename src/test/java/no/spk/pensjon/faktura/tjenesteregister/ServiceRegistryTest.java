@@ -5,6 +5,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,8 +26,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class ServiceRegistryTest {
-    @Rule
-    public final ExpectedException e = ExpectedException.none();
 
     private SimpleServiceRegistry registry;
 
@@ -36,8 +35,8 @@ public class ServiceRegistryTest {
     }
 
     /**
-     * Verifiserer at feilen identifisert ved test av PU_FAK_BA_12 3.0.4 på java 9 ikkje lenger eksisterer ved fleirtråda, samtidige oppslag
-     * av tenester som tenesteregisteret ikkje inneheld nokon tilbydarar for:
+     * Verifiserer at feilen identifisert ved test av PU_FAK_BA_12 3.0.4 på java 9 ikkje lenger eksisterer ved fleirtråda, samtidige oppslag av tenester som
+     * tenesteregisteret ikkje inneheld nokon tilbydarar for:
      *
      * <pre>
      *     Caused by: java.util.ConcurrentModificationException: null
@@ -165,9 +164,8 @@ public class ServiceRegistryTest {
 
     @Test
     public void skal_ikkje_godta_ugyldig_formaterte_egenskapar_ved_registrering() {
-        e.expect(UgyldigSyntaxException.class);
-
-        registry.registerService(Object.class, new Object(), "I don't care about formating");
+        assertThrows(UgyldigSyntaxException.class,
+                () -> registry.registerService(Object.class, new Object(), "I don't care about formating"));
     }
 
     @Test
@@ -246,11 +244,11 @@ public class ServiceRegistryTest {
 
     @Test
     public void skal_feile_paa_ugyldige_filter() {
-        e.expect(UgyldigSyntaxException.class);
-
         registry.registerService(String.class, "HELLO");
 
-        registry.getServiceReferences(String.class, "yada yada");
+        assertThrows(UgyldigSyntaxException.class,
+                () -> registry.getServiceReferences(String.class, "yada yada"));
+
     }
 
     @Test
