@@ -41,7 +41,6 @@
         <junit.version>4.13.2</junit.version>
 
         <jenkins-pipeline-library.version>0.18.0</jenkins-pipeline-library.version>
-
     </properties>
 
     <build>
