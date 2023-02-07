@@ -40,6 +40,8 @@
         <assertj-core.version>3.17.2</assertj-core.version>
         <junit.version>4.13.2</junit.version>
 
+        <jenkins-pipeline-library.version>0.18.0</jenkins-pipeline-library.version>
+
     </properties>
 
     <build>
@@ -149,6 +151,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>no.spk.infra</groupId>
+                <artifactId>jenkins-pipeline-library</artifactId>
+                <version>${jenkins-pipeline-library.version}</version>
+                <scope>provided</scope>
+                <optional>true</optional>
+            </dependency>
             <!-- test -->
             <dependency>
                 <groupId>org.assertj</groupId>
