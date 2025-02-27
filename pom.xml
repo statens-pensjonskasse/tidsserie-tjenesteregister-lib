@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>spk-root-pom</artifactId>
         <groupId>no.spk</groupId>
+        <artifactId>spk-root-pom</artifactId>
         <version>131.0.5</version>
         <relativePath />
     </parent>
@@ -17,10 +17,17 @@
     <description>Tjenesteregister for laust kobla applikasjonar med plugin-behov og ønske om laus kobling.</description>
 
     <scm>
-        <connection>scm:git:http://git.spk.no/scm/ff/faktura-tjenesteregister-lib.git</connection>
-        <developerConnection>scm:git:ssh://git@git.spk.no:7999/ff/faktura-tjenesteregister-lib.git</developerConnection>
-        <url>http://git.spk.no/projects/FF/repos/faktura-tjenesteregister-lib/browse</url>
+        <connection>scm:git:git@github.com:statens-pensjonskasse/faktura-tjenesteregister-lib.git</connection>
+        <developerConnection>scm:git:git@github.com:statens-pensjonskasse/faktura-tjenesteregister-lib.git</developerConnection>
+        <url>https://github.com/statens-pensjonskasse/faktura-tjenesteregister-lib</url>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/statens-pensjonskasse/faktura-tjenesteregister-lib</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <java.version>11</java.version>
@@ -44,8 +51,62 @@
         <jenkins-pipeline-library.version>0.18.0</jenkins-pipeline-library.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.spk.infra</groupId>
+                <artifactId>jenkins-pipeline-library</artifactId>
+                <version>${jenkins-pipeline-library.version}</version>
+                <scope>provided</scope>
+                <optional>true</optional>
+            </dependency>
+            <!-- test -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito-core.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- test -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/statens-pensjonskasse/*</url>
+        </repository>
+    </repositories>
+
     <build>
-       <pluginManagement>
+        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -127,51 +188,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <!-- test -->
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>no.spk.infra</groupId>
-                <artifactId>jenkins-pipeline-library</artifactId>
-                <version>${jenkins-pipeline-library.version}</version>
-                <scope>provided</scope>
-                <optional>true</optional>
-            </dependency>
-            <!-- test -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${assertj-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito-core.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>
