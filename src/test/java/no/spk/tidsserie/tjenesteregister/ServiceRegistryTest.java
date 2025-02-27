@@ -1,11 +1,11 @@
-package no.spk.pensjon.faktura.tjenesteregister;
+package no.spk.tidsserie.tjenesteregister;
 
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,20 +17,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
-import no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.support.SimpleServiceRegistry;
 
 import org.assertj.core.api.OptionalAssert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 
-public class ServiceRegistryTest {
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+class ServiceRegistryTest {
 
     private SimpleServiceRegistry registry;
 
-    @Before
-    public void _before() {
+    @BeforeEach
+    void _before() {
         registry = new SimpleServiceRegistry();
     }
 
@@ -41,10 +42,10 @@ public class ServiceRegistryTest {
      * <pre>
      *     Caused by: java.util.ConcurrentModificationException: null
      * 	           at java.base/java.util.HashMap.computeIfAbsent(HashMap.java:1134)
-     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.entriesFor(SimpleServiceRegistry.java:132)
-     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.referencesFor(SimpleServiceRegistry.java:118)
-     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:51)
-     * 	           at no.spk.pensjon.faktura.tjenesteregister.support.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:46)
+     * 	           at support.no.spk.tidsserie.tjenesteregister.SimpleServiceRegistry.entriesFor(SimpleServiceRegistry.java:132)
+     * 	           at support.no.spk.tidsserie.tjenesteregister.SimpleServiceRegistry.referencesFor(SimpleServiceRegistry.java:118)
+     * 	           at support.no.spk.tidsserie.tjenesteregister.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:51)
+     * 	           at support.no.spk.tidsserie.tjenesteregister.SimpleServiceRegistry.getServiceReferences(SimpleServiceRegistry.java:46)
      * 	           at no.spk.felles.tidsserie.batch.core.registry.Extensionpoint.invokeAll(Extensionpoint.java:72)
      * 	           at no.spk.felles.tidsserie.batch.backend.hazelcast.Tidsserieagent.notifyListeners(Tidsserieagent.java:69)
      * 	           at no.spk.felles.tidsserie.batch.backend.hazelcast.Tidsserieagent.initialize(Tidsserieagent.java:64)
@@ -54,7 +55,7 @@ public class ServiceRegistryTest {
      * @link http://jira.spk.no/browse/SPKMASTER-26010?focusedCommentId=557258&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-557258
      */
     @Test
-    public void skal_ikkje_feile_ved_samtidige_oppslag_av_tjenestetyper_det_ikkje_er_registrert_tjenester_for() throws InterruptedException {
+    void skal_ikkje_feile_ved_samtidige_oppslag_av_tjenestetyper_det_ikkje_er_registrert_tjenester_for() throws InterruptedException {
         final int availableProcessors = Runtime.getRuntime().availableProcessors();
         final ExecutorService executor = Executors.newFixedThreadPool(availableProcessors);
 
@@ -95,8 +96,8 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_faa_tilbake_samme_instans_som_vart_registrert() {
-        final String expected = "I AM MYSELF";
+    void skal_faa_tilbake_samme_instans_som_vart_registrert() {
+        final String expected = "I AM afa";
         assertTjeneste(
                 registry.registerService(
                         String.class,
@@ -108,20 +109,20 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_fjerne_tenesta_ved_avregistrering() {
+    void skal_fjerne_tenesta_ved_avregistrering() {
         registry.registerService(String.class, "I WAS HERE BUT NO MORE").unregister();
         assertStandardtenesteForType(String.class).isEmpty();
     }
 
     @Test
-    public void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen() {
+    void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen() {
         assertThat(registry.getServiceReference(Object.class))
                 .as("tjenesterefeanse for tjenestetype " + Object.class.getSimpleName())
                 .isEmpty();
     }
 
     @Test
-    public void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen_og_som_matchar_filter() {
+    void skal_ikkje_finne_noka_tjeneste_dersom_ingen_har_registrert_noko_for_tjenestetypen_og_som_matchar_filter() {
         registry.registerService(String.class, "I AM VALUE", "key=value");
 
         assertThat(registry.getServiceReference(String.class, "key=othervalue"))
@@ -130,7 +131,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_soeke_opp_kun_tenester_som_matchar_alle_filter_ikkje_bere_nokon_av_dei() {
+    void skal_soeke_opp_kun_tenester_som_matchar_alle_filter_ikkje_bere_nokon_av_dei() {
         final String expected = "I AM HEROES";
         registry.registerService(String.class, expected, "a=b", "c=d");
         registry.registerService(String.class, "I'M NO HERO", "a=b", "c=x");
@@ -163,13 +164,13 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_ikkje_godta_ugyldig_formaterte_egenskapar_ved_registrering() {
+    void skal_ikkje_godta_ugyldig_formaterte_egenskapar_ved_registrering() {
         assertThrows(UgyldigSyntaxException.class,
                 () -> registry.registerService(Object.class, new Object(), "I don't care about formating"));
     }
 
     @Test
-    public void skal_registrere_tenester_som_ikkje_angir_ranking_med_ranking_0() {
+    void skal_registrere_tenester_som_ikkje_angir_ranking_med_ranking_0() {
         final ServiceRegistration<String> registration = registry.registerService(String.class, "I HAVE NO RANK");
         assertThat(registration.getReference().getProperty(Constants.SERVICE_RANKING))
                 .as("service ranking")
@@ -177,7 +178,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_kopiere_egenskapane_ved_registrering() {
+    void skal_kopiere_egenskapane_ved_registrering() {
         final String[] egenskapar = {"ABCD=EFGH"};
         final ServiceRegistration<String> registration = registry.registerService(String.class, "I HAVE NO RANK", egenskapar);
         egenskapar[0] = "YADA=LOL";
@@ -188,7 +189,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_lokalisere_den_hoegast_ranka_tenesta_som_standardteneste() {
+    void skal_lokalisere_den_hoegast_ranka_tenesta_som_standardteneste() {
         final String expected = "BY THE POWER OF GREYSKULL, I AM THE DEFAULT!";
 
         registry.registerService(String.class, "BY THE POWER OF NOTHING, I AM NO DEFAULT :(", ranking(10));
@@ -202,7 +203,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_faa_ut_alle_tenester_for_typen_viss_fleire_er_registrert() {
+    void skal_faa_ut_alle_tenester_for_typen_viss_fleire_er_registrert() {
         registry.registerService(String.class, "1");
         registry.registerService(String.class, "2");
 
@@ -212,7 +213,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_mange_referansar() {
+    void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_mange_referansar() {
         registry.registerService(Path.class, Paths.get("."), "katalog=currentDir");
         registry.registerService(Path.class, Paths.get("/tmp"), "katalog=tmpDir");
 
@@ -227,7 +228,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_standardteneste() {
+    void skal_kunne_filtrere_tenester_paa_egenskap_ved_uthenting_av_standardteneste() {
         registry.registerService(Path.class, Paths.get("."), "katalog=currentDir");
         registry.registerService(Path.class, Paths.get("/tmp"), "katalog=tmpDir");
 
@@ -243,7 +244,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_feile_paa_ugyldige_filter() {
+    void skal_feile_paa_ugyldige_filter() {
         registry.registerService(String.class, "HELLO");
 
         assertThrows(UgyldigSyntaxException.class,
@@ -252,7 +253,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_beholde_erliktegn_etter_foerste_erlik_som_skiller_navn_fra_verdi_i_filter() {
+    void skal_beholde_erliktegn_etter_foerste_erlik_som_skiller_navn_fra_verdi_i_filter() {
         final ServiceRegistration<String> registration = registry.registerService(
                 String.class,
                 "HEI",
@@ -269,7 +270,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_matche_alle_tjenester_dersom_filter_manglar() {
+    void skal_matche_alle_tjenester_dersom_filter_manglar() {
         registry.registerService(Integer.class, 1);
         registry.registerService(Integer.class, 2);
         registry.registerService(Integer.class, 3);
@@ -279,7 +280,7 @@ public class ServiceRegistryTest {
     }
 
     @Test
-    public void skal_matche_standardtjeneste_dersom_filter_manglar() {
+    void skal_matche_standardtjeneste_dersom_filter_manglar() {
         registry.registerService(Integer.class, 1);
 
         assertThat(registry.getServiceReference(Integer.class)).isPresent();

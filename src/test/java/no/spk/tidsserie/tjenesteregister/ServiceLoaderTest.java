@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tjenesteregister;
+package no.spk.tidsserie.tjenesteregister;
 
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toList;
@@ -11,15 +11,18 @@ import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 
-public class ServiceLoaderTest {
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+class ServiceLoaderTest {
     /**
      * Verifiserer at applikasjonar som ønskjer å opprette nye tjenesteregister kan instansiere
      * standardimplementasjonen via java sin innebygde {@link ServiceLoader} API.
      */
     @Test
-    public void skal_vere_tilgjengelig_via_service_loader() {
+    void skal_vere_tilgjengelig_via_service_loader() {
         assertThat(load())
                 .as("ServiceRegistry-instans lasta frå java.util.ServiceLoader")
                 .hasSize(1);
@@ -29,7 +32,7 @@ public class ServiceLoaderTest {
      * Verifiserer at ServiceLoader ikkje gjennbruker tidligare lasta instansar av tjenesteregisteret.
      */
     @Test
-    public void skal_laste_ny_instans_for_kvart_kall() {
+    void skal_laste_ny_instans_for_kvart_kall() {
         ServiceLoader.load(Object.class);
         assertThat(load())
                 .as("ServiceRegistry-instans lasta frå java.util.ServiceLoader")

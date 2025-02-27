@@ -1,9 +1,9 @@
-package no.spk.pensjon.faktura.tjenesteregister.support;
+package no.spk.tidsserie.tjenesteregister.support;
 
 import java.util.Properties;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
-import no.spk.pensjon.faktura.tjenesteregister.UgyldigSyntaxException;
+import no.spk.tidsserie.tjenesteregister.ServiceReference;
+import no.spk.tidsserie.tjenesteregister.UgyldigSyntaxException;
 
 class Egenskap {
     private final String name;

@@ -1,8 +1,7 @@
-package no.spk.pensjon.faktura.tjenesteregister;
+package no.spk.tidsserie.tjenesteregister;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * {@link ServiceRegistry} er eit tjenesteregister for in-JVM tjenester.

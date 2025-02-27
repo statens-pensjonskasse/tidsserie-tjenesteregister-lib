@@ -1,6 +1,4 @@
-package no.spk.pensjon.faktura.tjenesteregister;
-
-import java.util.Properties;
+package no.spk.tidsserie.tjenesteregister;
 
 /**
  * Ei registrert teneste.

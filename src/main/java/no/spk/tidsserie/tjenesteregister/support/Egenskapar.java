@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tjenesteregister.support;
+package no.spk.tidsserie.tjenesteregister.support;
 
 import java.util.ArrayList;
 import java.util.List;

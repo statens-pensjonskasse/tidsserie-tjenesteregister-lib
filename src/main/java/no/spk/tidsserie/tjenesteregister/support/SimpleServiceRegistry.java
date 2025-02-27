@@ -1,11 +1,11 @@
-package no.spk.pensjon.faktura.tjenesteregister.support;
+package no.spk.tidsserie.tjenesteregister.support;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static no.spk.pensjon.faktura.tjenesteregister.Constants.SERVICE_RANKING;
+import static no.spk.tidsserie.tjenesteregister.Constants.SERVICE_RANKING;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +16,10 @@ import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import no.spk.pensjon.faktura.tjenesteregister.ServiceReference;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistration;
-import no.spk.pensjon.faktura.tjenesteregister.ServiceRegistry;
-import no.spk.pensjon.faktura.tjenesteregister.UgyldigSyntaxException;
+import no.spk.tidsserie.tjenesteregister.ServiceReference;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistration;
+import no.spk.tidsserie.tjenesteregister.ServiceRegistry;
+import no.spk.tidsserie.tjenesteregister.UgyldigSyntaxException;
 
 public class SimpleServiceRegistry implements ServiceRegistry {
     private static final String[] MATCH_ANY = new String[0];

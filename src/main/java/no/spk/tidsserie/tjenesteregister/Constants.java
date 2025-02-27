@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tjenesteregister;
+package no.spk.tidsserie.tjenesteregister;
 
 /**
  * Definerer standard navn for egenskapar som er felles på tvers av alle typer tenester i tenesteregisteret.

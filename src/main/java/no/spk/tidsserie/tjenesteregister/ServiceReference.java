@@ -1,4 +1,4 @@
-package no.spk.pensjon.faktura.tjenesteregister;
+package no.spk.tidsserie.tjenesteregister;
 
 import java.util.Optional;
 

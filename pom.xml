@@ -9,94 +9,26 @@
         <relativePath />
     </parent>
 
-    <groupId>no.spk.pensjon.faktura</groupId>
-    <artifactId>faktura-tjenesteregister-lib</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <groupId>no.spk.tidsserie</groupId>
+    <artifactId>tjenesteregister-lib</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <description>Tjenesteregister for laust kobla applikasjonar med plugin-behov og ønske om laus kobling.</description>
 
     <scm>
-        <connection>scm:git:git@github.com:statens-pensjonskasse/faktura-tjenesteregister-lib.git</connection>
-        <developerConnection>scm:git:git@github.com:statens-pensjonskasse/faktura-tjenesteregister-lib.git</developerConnection>
-        <url>https://github.com/statens-pensjonskasse/faktura-tjenesteregister-lib</url>
+        <connection>scm:git:git@github.com:statens-pensjonskasse/tidsserie-tjenesteregister-lib.git</connection>
+        <developerConnection>scm:git:git@github.com:statens-pensjonskasse/tidsserie-tjenesteregister-lib.git</developerConnection>
+        <url>https://github.com/statens-pensjonskasse/tidsserie-tjenesteregister-lib</url>
     </scm>
 
     <distributionManagement>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/statens-pensjonskasse/faktura-tjenesteregister-lib</url>
+            <url>https://maven.pkg.github.com/statens-pensjonskasse/tidsserie-tjenesteregister-lib</url>
         </repository>
     </distributionManagement>
 
-    <properties>
-        <java.version>11</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-deploy-plugin.version>3.0.0-M2</maven-deploy-plugin.version>
-        <maven-install-plugin.version>3.0.1</maven-install-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
-        <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
-        <maven-site-plugin.version>4.0.0-M3</maven-site-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-
-        <jgitflow-maven-plugin.version>1.0-m5.1</jgitflow-maven-plugin.version>
-        <mockito-core.version>4.8.0</mockito-core.version>
-        <assertj-core.version>3.17.2</assertj-core.version>
-        <junit.version>4.13.2</junit.version>
-
-        <jenkins-pipeline-library.version>0.18.0</jenkins-pipeline-library.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>no.spk.infra</groupId>
-                <artifactId>jenkins-pipeline-library</artifactId>
-                <version>${jenkins-pipeline-library.version}</version>
-                <scope>provided</scope>
-                <optional>true</optional>
-            </dependency>
-            <!-- test -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${assertj-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito-core.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <!-- test -->
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <repositories>
         <repository>
@@ -105,62 +37,79 @@
         </repository>
     </repositories>
 
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- test -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.15.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven-clean-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven-deploy-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven-install-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
                     <configuration>
                         <quiet>true</quiet>
-                        <source>11</source>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven-site-plugin.version}</version>
+                    <version>4.0.0-M3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>external.atlassian.jgitflow</groupId>
                     <artifactId>jgitflow-maven-plugin</artifactId>
-                    <version>${jgitflow-maven-plugin.version}</version>
+                    <version>1.0-m5.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
