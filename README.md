@@ -1,4 +1,4 @@
-# tidsserie-bootstrap-lib
+# tidsserie-tjenesteregister-lib
 
 ## Migreringsguide
 ### 2.0.x -> 3.0.0
