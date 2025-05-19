@@ -11,7 +11,7 @@
 
     <groupId>no.spk.tidsserie</groupId>
     <artifactId>tjenesteregister-lib</artifactId>
-    <version>3.0.7</version>
+    <version>3.0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <description>Tjenesteregister for laust kobla applikasjonar med plugin-behov og ønske om laus kobling.</description>
